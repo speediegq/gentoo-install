@@ -187,13 +187,13 @@ fi
 
 tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner && echo "Unpacked the tarball to $rootPartition"
 
-sed '/COMMON_FLAGS/d' /mnt/gentoo/etc/portage/make.conf
-sed '/MAKEOPTS/d' /mnt/gentoo/etc/portage/make.conf
+#sed '/COMMON_FLAGS/d' /mnt/gentoo/etc/portage/make.conf
+#sed '/MAKEOPTS/d' /mnt/gentoo/etc/portage/make.conf
 
-commonflags=$"COMMON_FLAGS=\'-$OX -pipe -march=$arch -mtune=$arch\'"
-makeopts=$"MAKEOPTS=\'-j$compiler -l$compiler\'"
-echo $commonflags >> /mnt/gentoo/etc/portage/make.conf
-echo $makeopts >> /mnt/gentoo/etc/portage/make.conf
+#commonflags=$"COMMON_FLAGS=\'-$OX -pipe -march=$arch -mtune=$arch\'"
+#makeopts=$"MAKEOPTS=\'-j$compiler -l$compiler\'"
+#echo $commonflags >> /mnt/gentoo/etc/portage/make.conf
+#echo $makeopts >> /mnt/gentoo/etc/portage/make.conf
 
 mkdir --parents /mnt/gentoo/etc/portage/repos.conf
 cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf

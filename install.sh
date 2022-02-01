@@ -76,6 +76,20 @@ else
 	echo "Doas will not be installed!"
 fi
 
+if [ $rice = "Y" ]; then
+        echo "NOTE: If you're running in VirtualBox or VM, type vmware or virtualbox respectively here!! && echo -n "Pick what your VIDEO_CARDS you want! Example: amdgpu: " && read videocards && echo "Alright."
+else
+        echo "Skipping VIDEO_CARDS"
+fi
+
+if [ $rice = "Y" ]; then
+        echo "Pick what INPUT_DEVICES you want: Most people are going to want libinput, synaptics for touchpads: " && read inputdevices && echo "Ok."
+else
+        echo "Skipping INPUT_DEVICES"
+fi
+
+echo -n "Enter the username of the user you would like to create: " && read username && echo "Alright."
+
 echo -n "Would you like to use a distro kernel? If no, you will be asked to specify a URL to a kernel config. Y/N: " && read kernel && echo "Alright."
 
 echo "If you're not sure, read https://wiki.gentoo.org/wiki/GCC_optimization or if you're compiling on the same machine you're installing, type native"
@@ -187,68 +201,24 @@ mount --types proc /proc /mnt/gentoo/proc && mount --rbind /sys /mnt/gentoo/sys 
 
 test -L /dev/shm && rm /dev/shm && mkdir /dev/shm && mount --types tmpfs --options nosuid,nodev,noexec shm /dev/shm && chmod 1777 /dev/shm /run/shm && echo "Compatibility stuff."
 
+mkdir gentoo-install && echo $init > /mnt/gentoo/gentoo-install/init && echo "Saved variables (/gentoo-install/init)
+echo $useflags > /mnt/gentoo/gentoo-install/useflags
+echo $timezone > /mnt/gentoo/gentoo-install/timezone
+echo $EFI > /mnt/gentoo/gentoo-install/EFI
+echo $kernelconfig > /mnt/gentoo/gentoo-install/kernelconfig
+echo $compiler > /mnt/gentoo/gentoo-install/compiler
+echo $rice > /mnt/gentoo/gentoo-install/rice
+echo $term > /mnt/gentoo/gentoo-install/term
+echo $shell > /mnt/gentoo/gentoo-install/shell
+echo $doas > /mnt/gentoo/gentoo-install/doas
+echo $wm > /mnt/gentoo/gentoo-install/wm
+echo $videocards > /mnt/gentoo/gentoo-install/videocards
+echo $inputdevices > /mnt/gentoo/gentoo-install/inputdevices
+echo $username > /mnt/gentoo/gentoo-install/username
+ 
+wget https://raw.githubusercontent.com/speediegamer/gentoo-install/main/stage2.sh && echo "Downloaded stage2"
+chmod +x stage2.sh
+
+echo "Now please run ./stage2.sh"
+
 chroot /mnt/gentoo /bin/bash && source /etc/profile && export PS1="CHROOT ${PS1}" && echo "Chrooted to $rootPartition, it is now /"
-
-emerge-webrsync && emerge --sync --quiet && echo "Sync"
-
-if [ "$init" = "systemd" ]; then
-	eselect profile set 17
-else
-	eselect profile set 1
-fi
-
-emerge --quiet --update --deep --newuse @world && echo "Updated @world"
-
-if [ "$init" = "openrc" ]; then
-    echo "USE:'-systemd $useflags alsa" >> /etc/portage/make.conf
-else
-    echo "USE:'$useflags alsa" >> /etc/portage/make.conf
-fi
-
-echo $timezone > /etc/timezone && emerge --config sys-libs/timezone-data
-echo "$locale ISO-8859-1" >> /etc/locale.gen
-echo "$locale.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
-echo "$locale.UTF-8" >> /etc/env.d/02locale
-
-env-update && source /etc/profile
-
-emerge sys-fs/genfstab && echo "Emerged genfstab"
-
-if [ kernel = "Y" ]; then
-	emerge sys-kernel/installkernel-gentoo && emerge sys-kernel/gentoo-kernel-bin && emerge linux-firmware && emerge --depclean
-else
-	emerge gentoo-sources && emerge app-arch/lz4 && emerge genkernel && emerge linux-firmware && eselect kernel set 1 && cd /usr/src/linux && make mrproper && rm -rf .config && wget $kernelconfig && make olddefconfig && make -j$compiler && make modules_prepare && make modules_install && make install && echo "Installed kernel"
-fi
-
-if [ initramfs = "Y" ]; then
-	genkernel --help && genkernel --install --kernel-config=/usr/src/linux/.config initramfs
-else
-	echo "Will not use initramfs"
-fi
-
-genfstab -U / >> /etc/fstab && echo "Generated fstab in /etc/fstab"
-
-echo "hostname='gentoo'" >> /etc/conf.d/hostname
-
-emerge net-misc/dhcpcd && emerge --noreplace net-misc/netifrc && rc-update add dhcpcd default && rc-service dhcpcd start && echo "Emerged basic network tools (netifrc, dhcpcd) and enabled dhcpcd"
-
-emerge sys-fs/e2fsprogs && echo "Emerged e2fsprogs (ext4)" && emerge sys-fs/dosfstools && echo "Emerged dosfstools (fat)"
-
-if [ $EFI = "Y" ]; then
-	echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
-else
-	echo "Using MBR, won't add GRUB_PLATFORMS to make.conf"
-fi
-
-emerge sys-boot/grub && echo "Emerged grub bootloader"
-
-if [ $EFI = "Y" ]; then
-	grub-install --target=x86_64-efi --efi-directory=/boot && grub-mkconfig -o /boot/grub/grub.cfg
-else
-	grub-install $grubPartitionEFI
-fi
-
-
-
-
-

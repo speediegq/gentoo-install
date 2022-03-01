@@ -34,15 +34,15 @@ echo
 echo -n "Are we installing as EFI? Y/N: " && read EFI && echo "Alright, we're installing grub for EFI"
 lsblk
 
-if [ $EFI = "Y" ]; then
-    echo -n "Enter the drive you wanna install Grub to: Example: /dev/sda1: " && read grubPartitionEFI && echo "$grubPartitionEFI will be your /boot partitiion"
+if [[ $EFI = "Y" ]]; then
+        echo -n "Enter the drive you wanna install Grub to: Example: /dev/sda1: " && read grubPartitionEFI && echo "$grubPartitionEFI will be your /boot partitiion"
 else
 	echo "Installing as MBR, will not ask for EFI partition"
 fi
 
 echo -n "Enter the drive you wanna install your Gentoo to: Example: /dev/sda2: " && read rootPartition && echo "$rootPartition will be your / partition"
 
-if [ $EFI = "N" ]; then
+if [[ $EFI = "N" ]]; then
 	echo -n "Enter the full drive you wanna install Grub to: Example: /dev/sda: " && read grubPartitionEFI && echo "Using $grubPartitionEFI"
 else
 	echo "Ignoring MBR option!"
@@ -52,37 +52,37 @@ echo -n "Would you like OpenRC or systemdick? openrc/systemd: " && read init && 
 
 echo -n "Do you wish to install my rice as well? Y/N: " && read rice && echo "Alright."
 
-if [ $rice = "Y" ]; then
+if [[ $rice = "Y" ]]; then
 	echo -n "What Window Manager would you like to install? (Available: dwm): " && read wm && echo "$wm will be installed!"
 else
 	echo "Won't install Window Manager, you will have to do that yourself."
 fi
 
-if [ $rice = "Y" ]; then
+if [[ $rice = "Y" ]]; then
 	echo -n "What terminal would you like to install? (Available: st, urxvt): " && read term && echo "$term will be installed!"
 else
 	echo "Won't install Terminal, you will have to do that yourself."
 fi
 
-if [ $rice = "Y" ]; then
+if [[ $rice = "Y" ]]; then
 	echo -n "What shell would you like to install? (Available: Bash, Zsh): " && read shell && echo "$shell will be installed!"
 else
 	echo "No shell will be installed"
 fi
 
-if [ $rice = "Y" ]; then
+if [[ $rice = "Y" ]]; then
 	echo -n "Would you like to install doas? Y/N: " && read doas && echo "Alright."
 else
 	echo "Doas will not be installed!"
 fi
 
-if [ $rice = "Y" ]; then
-        echo "NOTE: If you're running in VirtualBox or VM, type vmware or virtualbox respectively here!! && echo -n "Pick what your VIDEO_CARDS you want! Example: amdgpu: " && read videocards && echo "Alright."
+if [[ $rice = "Y" ]]; then
+        echo "NOTE: If you're running in VirtualBox or VM, type vmware or virtualbox respectively here!!" && echo -n "Pick what your VIDEO_CARDS you want! Example: amdgpu: " && read videocards && echo "Alright."
 else
         echo "Skipping VIDEO_CARDS"
 fi
 
-if [ $rice = "Y" ]; then
+if [[ $rice = "Y" ]]; then
         echo "Pick what INPUT_DEVICES you want: Most people are going to want libinput, synaptics for touchpads: " && read inputdevices && echo "Ok."
 else
         echo "Skipping INPUT_DEVICES"
@@ -107,31 +107,31 @@ echo -n "What locale would you like to use? Examples: en_US: " && read locale &&
 
 echo -n "Would you like to specify a custom tarball? Y/N: " && read customtarball && echo "Ok."
 
-if [ $customtarball = "Y" ]; then
+if [[ $customtarball = "Y" ]]; then
 	echo -n "Give me a link to a valid tarball: " && read stage3custom && echo "Ok"
 else
 	echo "No tarball needs to be provided." && stage3=N
 fi
 
-if [ "$stage3tarball" = "Y" ]; then
+if [[ "$stage3tarball" = "Y" ]]; then
 	echo -n "Is this a stage3 systemdick tarball or an OpenRC tarball?: systemd/openrc: " && read stage3init && echo "OK"
 else
 	echo "No custom tarball, ignoring.."
 fi
 
-if [ "$stage3init" = "systemd" ]; then
+if [[ "$stage3init" = "systemd" ]]; then
 	stage3d="$(stage3init)"
-elif [ "$stage3init" = "openrc" ]; then
+elif [[ "$stage3init" = "openrc" ]]; then
 	stage3rc="$(stage3init)"
 fi
 
-if [ $kernel = "N" ]; then
+if [[ $kernel = "N" ]]; then
 	echo -n "Specify a URL to a custom kernel. Or type speedie to use speedie's kernel: " && read kernelconfig
 else
 	echo "Ok." && kernelconfig=N
 fi
 
-if [ "$kernelconfig" = "speedie" ]; then
+if [[ "$kernelconfig" = "speedie" ]]; then
 	kernelconfig="https://raw.githubusercontent.com/speediegamer/configurations/main/usr/src/linux/.config"
 fi
 
@@ -187,13 +187,13 @@ fi
 
 tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner && echo "Unpacked the tarball to $rootPartition"
 
-#sed '/COMMON_FLAGS/d' /mnt/gentoo/etc/portage/make.conf
-#sed '/MAKEOPTS/d' /mnt/gentoo/etc/portage/make.conf
+sed '/COMMON_FLAGS/d' /mnt/gentoo/etc/portage/make.conf
+sed '/MAKEOPTS/d' /mnt/gentoo/etc/portage/make.conf
 
-#commonflags=$"COMMON_FLAGS=\'-$OX -pipe -march=$arch -mtune=$arch\'"
-#makeopts=$"MAKEOPTS=\'-j$compiler -l$compiler\'"
-#echo $commonflags >> /mnt/gentoo/etc/portage/make.conf
-#echo $makeopts >> /mnt/gentoo/etc/portage/make.conf
+commonflags=$"COMMON_FLAGS=\'-$OX -pipe -march=$arch -mtune=$arch\'"
+makeopts=$"MAKEOPTS=\'-j$compiler -l$compiler\'"
+echo $commonflags >> /mnt/gentoo/etc/portage/make.conf
+echo $makeopts >> /mnt/gentoo/etc/portage/make.conf
 
 mkdir --parents /mnt/gentoo/etc/portage/repos.conf
 cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
@@ -203,7 +203,7 @@ mount --types proc /proc /mnt/gentoo/proc && mount --rbind /sys /mnt/gentoo/sys 
 
 test -L /dev/shm && rm /dev/shm && mkdir /dev/shm && mount --types tmpfs --options nosuid,nodev,noexec shm /dev/shm && chmod 1777 /dev/shm /run/shm && echo "Compatibility stuff."
 
-mkdir gentoo-install && echo $init > /mnt/gentoo/gentoo-install/init && echo "Saved variables (/gentoo-install/init)
+mkdir gentoo-install && echo $init > /mnt/gentoo/gentoo-install/init && echo "Saved variables /gentoo-install/init"
 echo $useflags > /mnt/gentoo/gentoo-install/useflags
 echo $timezone > /mnt/gentoo/gentoo-install/timezone
 echo $EFI > /mnt/gentoo/gentoo-install/EFI

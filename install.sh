@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 name="speedie's gentoo-install script"
 vers="v0.1"

@@ -20,40 +20,24 @@ echo "$vers"
 echo "NOTE: Only supports AMD64 currently!!"
 echo "Before we can start the installation, I will ask you a few questions"
 echo  
-
 if [ $user = "root" ]; then
 	echo "You're running this script as root, good job!"
 else
 	echo "You're not running as root, please run this script with root permissions." && sleep 2 && exit
 fi
-
 echo
 echo "--/Settings!\--"
 echo
-
 echo -n "Are we installing as EFI? Y/N: " && read EFI && echo "Alright, we're installing grub for EFI"
 lsblk
-
-if [[ $EFI = "Y" ]]; then
-        echo -n "Enter the drive you wanna install Grub to: Example: /dev/sda1: " && read grubPartitionEFI && echo "$grubPartitionEFI will be your /boot partitiion"
-else
-	echo "Installing as MBR, will not ask for EFI partition"
-fi
-
+echo -n "Enter the drive you wanna install Grub to: Example: /dev/sda1: " && read grubPartitionEFI && echo "$grubPartitionEFI will be your /boot partitiion"
 echo -n "Enter the drive you wanna install your Gentoo to: Example: /dev/sda2: " && read rootPartition && echo "$rootPartition will be your / partition"
-
-if [[ $EFI = "N" ]]; then
-	echo -n "Enter the full drive you wanna install Grub to: Example: /dev/sda: " && read grubPartitionEFI && echo "Using $grubPartitionEFI"
-else
-	echo "Ignoring MBR option!"
-fi
-
 echo -n "Would you like OpenRC or systemdick? openrc/systemd: " && read init && echo "Using $init"
 
 echo -n "Do you wish to install my rice as well? Y/N: " && read rice && echo "Alright."
 
 if [[ $rice = "Y" ]]; then
-	echo -n "What Window Manager would you like to install? (Available: dwm): " && read wm && echo "$wm will be installed!"
+	echo -n "What Window Manager would you like to install? (Available: spDE): " && read wm && echo "$wm will be installed!"
 else
 	echo "Won't install Window Manager, you will have to do that yourself."
 fi
